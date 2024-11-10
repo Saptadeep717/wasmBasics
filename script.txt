@@ -1,0 +1,40 @@
+emcc addFunction.cpp -o addFunction.wasm -s SIDE_MODULE=1 -s "EXPORTED_FUNCTIONS=['_add']" -O3 -s WASM=1 -s STANDALONE_WASM=1 --no-entry
+
+for running the script
+
+
+emcc addFunction.cpp:
+emcc is the Emscripten compiler, which compiles C/C++ code to WebAssembly.
+addFunction.cpp is the C++ source file you are compiling.
+
+-o addFunction.wasm:
+-o specifies the output file name.
+addFunction.wasm is the output file, which will be a WebAssembly module containing the compiled code.
+
+-s SIDE_MODULE=1:
+SIDE_MODULE=1 creates a “side” WebAssembly module, which is designed to be loaded dynamically alongside a “main” module or in JavaScript.
+This module is intended to be standalone and doesn’t rely on the typical Emscripten runtime (such as the filesystem or I/O functions) 
+unless explicitly required.
+
+-s "EXPORTED_FUNCTIONS=['_add']":
+EXPORTED_FUNCTIONS tells Emscripten which functions to export from the module so they can be called from JavaScript.
+Here, you’re exporting only the _add function (with the underscore prefix because Emscripten automatically adds 
+underscores to function names).
+
+-O3:
+-O3 is an optimization flag, where 3 is the highest level of optimization. It prioritizes performance and can significantly 
+reduce runtime at the cost of longer compilation time.
+
+-s WASM=1:
+WASM=1 ensures that the output will be WebAssembly (as opposed to using Emscripten’s ASM.js output, an older alternative).
+
+-s STANDALONE_WASM=1:
+STANDALONE_WASM=1 tells Emscripten to create a WebAssembly module that can be run independently of the Emscripten runtime.
+This mode generates WebAssembly that can be loaded in JavaScript without needing special setup, making it easier to work with 
+directly in browsers or other environments.
+This also affects the way symbols and memory are managed, as it avoids dependencies on Emscripten-specific components.
+
+--no-entry:
+This option means there’s no main entry point (main function) in the code.
+Without main, this module is considered a “reactor” instead of a “program,” which is suitable for WebAssembly modules that 
+don’t need an entry point and will be used mainly for exporting functions like add to be called from JavaScript.
